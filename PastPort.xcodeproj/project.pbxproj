@@ -13,6 +13,7 @@
 		06E273312F01887200F7382F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		06E273322F01888400F7382F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		06E273332F01891A00F7382F /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		06E273342F018BB700F7382F /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -65,6 +66,7 @@
 		06E2732C2F01783A00F7382F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				06E273342F018BB700F7382F /* MapViewModel.swift */,
 				06E273332F01891A00F7382F /* DataService.swift */,
 				06E273322F01888400F7382F /* LocationManager.swift */,
 			);
