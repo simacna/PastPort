@@ -9,28 +9,162 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    @StateObject var viewModel = MapViewModel()
-    
-    // Set the initial camera position to St. Marks, NYC
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 40.7289, longitude: -73.9888),
-        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-    )
+    @StateObject private var viewModel = TourGuideViewModel()
+    @State private var showingAPIKeyAlert = false
+    @State private var apiKeyInput = ""
 
     var body: some View {
-        Map(coordinateRegion: $region, annotationItems: viewModel.locations) { poi in
-            MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: poi.location.latitude, longitude: poi.location.longitude)) {
-                VStack {
-                    Image(systemName: "book.circle.fill")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(.red)
-                    Text(poi.name)
-                        .font(.caption)
-                        .bold()
+        ZStack {
+            // Map
+            Map(coordinateRegion: $viewModel.mapRegion, showsUserLocation: true)
+                .ignoresSafeArea()
+
+            // Bottom control panel
+            VStack {
+                Spacer()
+
+                // Narration card
+                if !viewModel.currentNarration.isEmpty || viewModel.isLoading {
+                    narrationCard
                 }
+
+                // Control buttons
+                controlBar
+            }
+
+            // API Key missing overlay
+            if !viewModel.hasAPIKey {
+                apiKeyOverlay
             }
         }
-        .ignoresSafeArea()
+        .onAppear {
+            if viewModel.hasAPIKey {
+                viewModel.start()
+            } else {
+                showingAPIKeyAlert = true
+            }
+        }
+        .alert("Enter Claude API Key", isPresented: $showingAPIKeyAlert) {
+            TextField("sk-ant-...", text: $apiKeyInput)
+            Button("Save") {
+                viewModel.setAPIKey(apiKeyInput)
+                viewModel.start()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Your API key is stored locally on your device.")
+        }
     }
+
+    private var narrationCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if viewModel.isLoading {
+                HStack {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    Text("Discovering history...")
+                        .foregroundColor(.white)
+                        .font(.subheadline)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+            } else {
+                ScrollView {
+                    Text(viewModel.currentNarration)
+                        .foregroundColor(.white)
+                        .font(.body)
+                }
+                .frame(maxHeight: 150)
+                .padding()
+            }
+
+            if let error = viewModel.errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+                    .font(.caption)
+                    .padding(.horizontal)
+            }
+        }
+        .background(Color.black.opacity(0.8))
+        .cornerRadius(16)
+        .padding(.horizontal)
+    }
+
+    private var controlBar: some View {
+        HStack(spacing: 20) {
+            // Refresh button
+            Button(action: {
+                viewModel.refreshCurrentLocation()
+            }) {
+                Image(systemName: "arrow.clockwise")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .frame(width: 50, height: 50)
+                    .background(Color.blue)
+                    .clipShape(Circle())
+            }
+            .disabled(viewModel.isLoading)
+
+            // Play/Pause button
+            Button(action: {
+                viewModel.toggleSpeech()
+            }) {
+                Image(systemName: viewModel.speechService.isPaused ? "play.fill" : "pause.fill")
+                    .font(.title)
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(viewModel.speechService.isSpeaking ? Color.green : Color.gray)
+                    .clipShape(Circle())
+            }
+            .disabled(!viewModel.speechService.isSpeaking && viewModel.currentNarration.isEmpty)
+
+            // Stop button
+            Button(action: {
+                viewModel.stopSpeech()
+            }) {
+                Image(systemName: "stop.fill")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .frame(width: 50, height: 50)
+                    .background(Color.red)
+                    .clipShape(Circle())
+            }
+            .disabled(!viewModel.speechService.isSpeaking)
+        }
+        .padding()
+        .background(Color.black.opacity(0.6))
+        .cornerRadius(20)
+        .padding(.bottom, 30)
+    }
+
+    private var apiKeyOverlay: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "key.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.orange)
+
+            Text("API Key Required")
+                .font(.title2)
+                .fontWeight(.bold)
+
+            Text("To use History Guide, you need a Claude API key from Anthropic.")
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+                .padding(.horizontal)
+
+            Button("Enter API Key") {
+                showingAPIKeyAlert = true
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding(30)
+        .background(Color(.systemBackground))
+        .cornerRadius(20)
+        .shadow(radius: 10)
+        .padding()
+    }
+}
+
+#Preview {
+    ContentView()
 }
