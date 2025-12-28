@@ -9,6 +9,10 @@
 /* Begin PBXFileReference section */
 		06E2731C2F01761000F7382F /* PastPort.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PastPort.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		06E2732F2F01785A00F7382F /* PointOfInterest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointOfInterest.swift; sourceTree = "<group>"; };
+		06E273302F01884900F7382F /* seedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = seedData.swift; sourceTree = "<group>"; };
+		06E273312F01887200F7382F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		06E273322F01888400F7382F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		06E273332F01891A00F7382F /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -61,6 +65,8 @@
 		06E2732C2F01783A00F7382F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				06E273332F01891A00F7382F /* DataService.swift */,
+				06E273322F01888400F7382F /* LocationManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -68,6 +74,7 @@
 		06E2732D2F01784200F7382F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				06E273312F01887200F7382F /* ContentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -75,6 +82,7 @@
 		06E2732E2F01784800F7382F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				06E273302F01884900F7382F /* seedData.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
