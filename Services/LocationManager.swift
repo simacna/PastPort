@@ -31,6 +31,7 @@ class LocationManager: NSObject, ObservableObject {
     }
 
     func requestPermission() {
+        print("DEBUG: Requesting location permission, current status: \(authorizationStatus.rawValue)")
         locationManager.requestWhenInUseAuthorization()
     }
 
@@ -48,12 +49,15 @@ class LocationManager: NSObject, ObservableObject {
         // Check if this is a significant change from last reported location
         if let lastLocation = lastReportedLocation {
             let distance = location.distance(from: lastLocation)
+            print("DEBUG: Distance from last location: \(distance)m (threshold: \(significantDistanceThreshold)m)")
             if distance >= significantDistanceThreshold {
+                print("DEBUG: Significant change! Sending location update")
                 lastReportedLocation = location
                 significantLocationChange.send(location)
             }
         } else {
             // First location - always report
+            print("DEBUG: First location! Sending initial update")
             lastReportedLocation = location
             significantLocationChange.send(location)
         }
@@ -64,6 +68,7 @@ class LocationManager: NSObject, ObservableObject {
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
+        print("DEBUG: Got location update: \(location.coordinate.latitude), \(location.coordinate.longitude)")
         handleNewLocation(location)
     }
 
@@ -73,13 +78,17 @@ extension LocationManager: CLLocationManagerDelegate {
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
+        print("DEBUG: Authorization changed to: \(manager.authorizationStatus.rawValue)")
 
         switch manager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
+            print("DEBUG: Authorized - starting tracking")
             startTracking()
         case .denied, .restricted:
+            print("DEBUG: Denied/Restricted - stopping tracking")
             stopTracking()
         case .notDetermined:
+            print("DEBUG: Not determined yet")
             break
         @unknown default:
             break

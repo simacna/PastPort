@@ -158,7 +158,7 @@ struct ContentView: View {
             .buttonStyle(.borderedProminent)
         }
         .padding(30)
-        .background(Color(.systemBackground))
+        .background(Color.white)
         .cornerRadius(20)
         .shadow(radius: 10)
         .padding()

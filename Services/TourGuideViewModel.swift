@@ -80,11 +80,15 @@ class TourGuideViewModel: ObservableObject {
     }
 
     func start() {
+        print("DEBUG: start() called, requesting location permission")
         locationManager.requestPermission()
     }
 
     private func handleLocationUpdate(_ location: CLLocation) async {
+        print("DEBUG: handleLocationUpdate called with location: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+
         guard let claudeService = claudeService else {
+            print("DEBUG: No Claude service - API key missing")
             errorMessage = "Please set your Claude API key"
             return
         }
@@ -93,10 +97,14 @@ class TourGuideViewModel: ObservableObject {
         errorMessage = nil
 
         do {
+            print("DEBUG: Calling Claude API...")
             let narration = try await claudeService.getHistoricalContext(for: location)
+            print("DEBUG: Got response from Claude, length: \(narration.count)")
             currentNarration = narration
+            print("DEBUG: Speaking narration...")
             speechService.speak(narration)
         } catch {
+            print("DEBUG: Error from Claude: \(error)")
             errorMessage = error.localizedDescription
             currentNarration = ""
         }
